@@ -159,12 +159,11 @@ export const stripePayment = async (req, res) => {
     ];
 
     const session = await stripeInstance.checkout.sessions.create({
-      payment_method_types: ["card"],
       mode: "payment",
       line_items,
       success_url: `${origin}/loader/my-bookings`,
       cancel_url: `${origin}/my-bookings`,
-      metadata: { bookingId: `${booking._id}` },
+      metadata: { bookingId },
     });
 
     res.json({ success: true, url: session.url });
