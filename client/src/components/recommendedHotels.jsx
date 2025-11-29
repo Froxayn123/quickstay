@@ -4,7 +4,7 @@ import { useAppContext } from "../context/AppContext";
 import { useEffect, useState } from "react";
 
 const RecommendedHotels = () => {
-  const { rooms, searchedCities } = useAppContext();
+  const { user, rooms, searchedCities } = useAppContext();
   const [recommended, setRecommended] = useState([]);
 
   const filterHotels = () => {
@@ -19,7 +19,7 @@ const RecommendedHotels = () => {
   }, [rooms, searchedCities]);
 
   return (
-    rooms.length > 0 && (
+    user && (
       <div className="flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 py-20">
         <Title
           title="Recommended Hotels"
