@@ -82,7 +82,7 @@ const ListRoom = () => {
               return (
                 <tr key={index}>
                   <td className="py-3 px-4 text-gray-700 border-t border-gray-300">
-                    {item.roomType}
+                    {item.hotel.name}
                   </td>
                   <td className="py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:hidden">
                     {item.amenities.join(", ")}
