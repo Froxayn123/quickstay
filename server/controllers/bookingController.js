@@ -1,6 +1,7 @@
 import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
 import Hotel from "../models/Hotel.js";
+import transporter from "../configs/nodemailer.js";
 
 const checkAvailability = async ({ checkInDate, checkOutDate, room }) => {
   try {
@@ -61,6 +62,33 @@ export const createBooking = async (req, res) => {
       guests: +guests,
     });
 
+    const mailOptions = {
+      from: `"Booking Details" <${process.env.SMTP_SENDER}>`,
+      to: req.user.email,
+      subject: "Hotel Booking Details",
+      html: `
+        <h1>Booking Details</h1>
+        <p>Dear ${req.user.username}, </p>
+        <p>Thank you for your booking! Here are your details:</p>
+        <ul>
+          <li><strong>Booking ID: </strong>${booking._id}</li>
+          <li><strong>Hotel Name: </strong>${roomData.hotel.name}</li>
+          <li><strong>Location: </strong>${roomData.hotel.address}</li>
+          <li><strong>Check-in: </strong> ${booking.checkInDate.toDateString()}</li>
+          <li><strong>Check-out: </strong> ${booking.checkOutDate.toDateString()}</li>
+          <li><strong>Booking Amount: </strong>${
+            process.env.CURRENCY || "$"
+          }${totalPrice}/Night</li>
+        </ul>
+        <p>We look forward to welcoming you!</p>
+        <p>If you need to make any changes, feel free to contact us.</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions).catch((err) => {
+      console.error("EMAIL ERROR:", err);
+    });
+
     res.json({ success: true, message: "Booking created successfully" });
   } catch (error) {
     console.log(error);
@@ -87,7 +115,7 @@ export const getHotelBookings = async (req, res) => {
       return res.json({ success: false, message: "Hotel not found" });
     }
     const bookings = await Booking.find({ hotel: hotel._id })
-      .populate("room hotel")
+      .populate("room hotel user")
       .sort({
         createdAt: -1,
       });
