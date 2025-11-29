@@ -2,12 +2,36 @@ import { useLocation } from "react-router-dom";
 import Title from "../components/Title";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { assets, userBookingsDummyData } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
 const MyBookings = () => {
+  const { currency, getToken, user, axios } = useAppContext();
   const isOwnerPath = useLocation().pathname.includes("owner");
-  const [bookings, setBookings] = useState(userBookingsDummyData);
+  const [bookings, setBookings] = useState([]);
+
+  const fetchUserBookings = async () => {
+    try {
+      const { data } = await axios.get("/api/bookings/user", {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      });
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserBookings();
+  }, [user]);
 
   return (
     <>
@@ -52,7 +76,10 @@ const MyBookings = () => {
                         <img src={assets.guestsIcon} alt="locationIcon" />
                         <span>Guests: {booking.guests}</span>
                       </div>
-                      <p className="text-base">Total: ${booking.totalPrice}</p>
+                      <p className="text-base">
+                        Total: {currency}
+                        {booking.totalPrice}
+                      </p>
                     </div>
                   </div>
                   <div className="flex flex-row md:items-center md:gap-12 mt-3 gap-8">

@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import Testimonial from "../components/Testimonial";
 import NewsLetter from "../components/NewsLetter";
 import Footer from "../components/Footer";
+import RecommendedHotels from "../components/recommendedHotels";
 
 const Home = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -15,6 +16,7 @@ const Home = () => {
       <header>{!isOwnerPath && <Navbar />}</header>
       <main>
         <Hero />
+        <RecommendedHotels />
         <FeaturedDestination />
         <ExclusiveOffers />
         <Testimonial />
